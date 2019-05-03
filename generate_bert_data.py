@@ -84,7 +84,7 @@ def convert_to_json(annotations_dict, tweets_dict, output_file):
                     data['data'][0]['paragraphs'][i]['qas'][num_qas_entries]['question'] = "Is ADR mentioned?"
                     data['data'][0]['paragraphs'][i]['qas'][num_qas_entries]['id'] = "{}-{}".format(k, num_qas_entries)
 
-                    data['data'][0]['paragraphs'][i]['qas'][num_qas_entries]['answers'] = "[]"
+                    data['data'][0]['paragraphs'][i]['qas'][num_qas_entries]['answers'] = []
                     data['data'][0]['paragraphs'][i]['qas'][num_qas_entries]['is_impossible'] = True
 
                     num_qas_entries += 1
@@ -97,20 +97,14 @@ if __name__ == '__main__':
     num_missing_tweets = 0
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--tweets-text', required=True, type=str, help='ADRMine dataset file with tweets')
-    parser.add_argument('--tweets-annotations', required=True, type=str, help='ADRMine dataset file with annotations')
+    parser.add_argument('--adrmine-tweets', required=True, type=str, help='ADRMine dataset file with tweets')
+    parser.add_argument('--adrmine-annotations', required=True, type=str, help='ADRMine dataset file with annotations')
     parser.add_argument('--json-output-file', required=True, type=str, help='output file in JSON format')
-
-    #parser.add_argument('--train_ratio', default=1., type=float,
-    #                    help='ratio for train/val split')
-    #parser.add_argument('--remove_stopwords', dest='remove_stopwords', action='store_true')
-    #parser.add_argument('--use_stemming', dest='use_stemming', action='store_true')
-    #parser.add_argument('--clean_text', dest='clean_text', action='store_true')
 
     program_args = parser.parse_args()
 
     tweetTextDict = {}
-    with open(program_args.tweets_text) as f:
+    with open(program_args.adrmine_tweets) as f:
         for line in f:
             # each line contains 4 fields, tab-separated:
             # tweet ID, user ID, text ID and Tweet text
@@ -118,7 +112,7 @@ if __name__ == '__main__':
             tweetTextDict[textID] = tweetText
 
     annotationsDict = {}
-    with open(program_args.tweets_annotations) as f:
+    with open(program_args.adrmine_annotations) as f:
         for line in f:
             # each line contains 5 fields, tab-separated:
             # text ID, start offset, end offset, semantic type, annotated text, related drug and target drug.

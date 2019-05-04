@@ -1,0 +1,9 @@
+numpy==1.15.0
+tensorflow==1.10.0
+nltk==3.3
+six==1.11.0
+beautifulsoup4==4.7.1
+GitPython==2.1.11
+matplotlib==3.0.3
+progressbar2==3.39.3
+tensorflow_hub==0.4.0

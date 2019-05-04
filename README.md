@@ -56,7 +56,7 @@ python bert_adr_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-102
                               --do_train=False --train_file=adrmine_data/adrmine_train.json --do_predict=True \
                               --predict_file=adrmine_data/adrmine_test.json --train_batch_size=24 \
                               --learning_rate=3e-5 --num_train_epochs=2.0 --max_seq_length=100 --doc_stride=50 \
-                              --output_dir=./bert_adr_out --use_tpu=False --version_2_with_negative=True
+                              --output_dir=./bert_adr_model --use_tpu=False --version_2_with_negative=True
 ```
 
 2. Compute F1 score from bert adr classifier results:

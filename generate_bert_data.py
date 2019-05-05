@@ -25,7 +25,7 @@ def validate_annotations(annotations_dict, tweets_dict):
 
             realOffset = tweet.find(annotatedText)
             if realOffset != startOffset:
-                print("startOffset is wrong for {}. Annotated as {}, but should be {}".format(k, startOffset, realOffset))
+                print("Fixing startOffset for {}. (annotated at position {}, but should be at {})".format(k, startOffset, realOffset))
 
                 diff = realOffset - startOffset
                 annotation['startOffset'] = "{}".format(startOffset+diff)
@@ -42,6 +42,9 @@ def convert_to_json(annotations_dict, tweets_dict, output_file):
 
         return False
 
+    num_adr_samples = 0
+    num_no_adr_samples = 0
+
     data = {}
     data['version'] = "v2.0"
     data['data'] = [None]
@@ -54,10 +57,6 @@ def convert_to_json(annotations_dict, tweets_dict, output_file):
         data['data'][0]['paragraphs'][i] = {}
         data['data'][0]['paragraphs'][i]['context'] = tweets_dict[k]
         data['data'][0]['paragraphs'][i]['qas'] = []
-
-
-        if k == "effexor-51d7949453785f584a9b13eb":
-            print(k)
 
         does_contain_adr = contains_adr(v)
 
@@ -76,6 +75,7 @@ def convert_to_json(annotations_dict, tweets_dict, output_file):
                 data['data'][0]['paragraphs'][i]['qas'][num_qas_entries]['is_impossible'] = False
 
                 num_qas_entries += 1
+                num_adr_samples += 1
             else:
                 if does_contain_adr is False:
                     # we only add empty answers when the tweet does not contain an ADR, otherwise we just skip it
@@ -88,9 +88,14 @@ def convert_to_json(annotations_dict, tweets_dict, output_file):
                     data['data'][0]['paragraphs'][i]['qas'][num_qas_entries]['is_impossible'] = True
 
                     num_qas_entries += 1
+                    num_no_adr_samples += 1
 
     with open(output_file, 'w') as outfile:
         json.dump(data, outfile)
+
+    print("Converted JSON Data:")
+    print("     Number of samples containing ADR mentions: {}".format(num_adr_samples))
+    print("     Number of samples without ADR mentions: {}".format(num_no_adr_samples))
 
 
 if __name__ == '__main__':
@@ -112,6 +117,8 @@ if __name__ == '__main__':
             tweetTextDict[textID] = tweetText
 
     annotationsDict = {}
+    adrmine_orig_annotations = 0
+    num_usable_annotations = 0
     with open(program_args.adrmine_annotations) as f:
         for line in f:
             # each line contains 5 fields, tab-separated:
@@ -126,12 +133,19 @@ if __name__ == '__main__':
                                             'startOffset': startOffset,
                                             'endOffset': endOffset,
                                             'annotatedText': annotatedText})
+                num_usable_annotations += 1
             else:
                 print("TextID {} does not have a corresponding tweet".format(textID))
                 num_missing_tweets += 1
 
-
-    print("Num of annotations missing tweets is {}, with tweets is {}".format(num_missing_tweets,len(annotationsDict)))
+            adrmine_orig_annotations += 1
 
     validate_annotations(annotationsDict,tweetTextDict)
+
+    print("Original ADRMine Data:")
+    print("    Number of original annotations: {}".format(adrmine_orig_annotations))
+    print("    Number of missing tweets: {}".format(num_missing_tweets))
+    print("    Number of usable annotations: {}".format(num_usable_annotations))
+
     convert_to_json(annotationsDict, tweetTextDict, program_args.json_output_file)
+

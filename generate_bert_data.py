@@ -8,12 +8,7 @@ from __future__ import division
 
 import json
 import argparse
-import random
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer, SnowballStemmer
-from nltk.tokenize import sent_tokenize, word_tokenize
-import re, string
-
+import adrmine_data_loader
 
 def validate_annotations(annotations_dict, tweets_dict):
     for i, (k, v) in enumerate(annotations_dict.items()):
@@ -108,44 +103,8 @@ if __name__ == '__main__':
 
     program_args = parser.parse_args()
 
-    tweetTextDict = {}
-    with open(program_args.adrmine_tweets) as f:
-        for line in f:
-            # each line contains 4 fields, tab-separated:
-            # tweet ID, user ID, text ID and Tweet text
-            (tweetID, userID, textID, tweetText) = line.rstrip().split('\t')
-            tweetTextDict[textID] = tweetText
-
-    annotationsDict = {}
-    adrmine_orig_annotations = 0
-    num_usable_annotations = 0
-    with open(program_args.adrmine_annotations) as f:
-        for line in f:
-            # each line contains 5 fields, tab-separated:
-            # text ID, start offset, end offset, semantic type, annotated text, related drug and target drug.
-            (textID, startOffset, endOffset, semanticType, annotatedText, relatedDrug, targetDrug) = line.rstrip().split('\t')
-
-            if textID in tweetTextDict:
-                if textID not in annotationsDict:
-                    annotationsDict[textID] = []
-
-                annotationsDict[textID].append({'semanticType': semanticType,
-                                            'startOffset': startOffset,
-                                            'endOffset': endOffset,
-                                            'annotatedText': annotatedText})
-                num_usable_annotations += 1
-            else:
-                print("TextID {} does not have a corresponding tweet".format(textID))
-                num_missing_tweets += 1
-
-            adrmine_orig_annotations += 1
-
-    validate_annotations(annotationsDict,tweetTextDict)
-
-    print("Original ADRMine Data:")
-    print("    Number of original annotations: {}".format(adrmine_orig_annotations))
-    print("    Number of missing tweets: {}".format(num_missing_tweets))
-    print("    Number of usable annotations: {}".format(num_usable_annotations))
+    admine_data_loader = adrmine_data_loader.ADRMineDataLoader()
+    (annotationsDict, tweetTextDict) = admine_data_loader.load(program_args.adrmine_tweets, program_args.adrmine_annotations)
 
     convert_to_json(annotationsDict, tweetTextDict, program_args.json_output_file)
 

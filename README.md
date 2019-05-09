@@ -19,7 +19,8 @@ It will download and prepare the following sub-directories with components:
 3. bert_generic_model (bert pre-trained model from https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-24_H-1024_A-16.zip)
 4. bert_adr_out (bert fine-tuned ADR model)
 
-### Convert ADRMine data to BERT format
+### BERT Classifier
+#### Convert ADRMine data to BERT format
 1. Use ADRMine script to download training and test set tweets from which ADR annotation were created:
 
 ```
@@ -43,12 +44,12 @@ python generate_bert_data.py --adrmine-tweets=adrmine_data/download_tweets/train
 
 ```
 
-### Fine-tune ADR model
+#### Fine-tune ADR model
 Fine-tuning ADR model involves running bert neural network training and takes about 1 day on a fast Linux PC. That's why
 Google compute engine with TPU (Tensorflow Processing Unit) is recommended where it takes around 1 hour. T
 he following instructions are using Google TPU:
 
-### Evaluating ADR model
+#### Evaluating ADR model
 Evaluation of ADR model can be run as on desktop Linux PC as it does not very long time (about 2-4 minutes).
 However, it may run out of memory. On 16-GB Linux PC, it exceeded memory usage by 10% but still was able to run.
 
@@ -67,4 +68,13 @@ python bert_adr_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-102
 ```
 python evaluate-v2.0.py adrmine_data/adrmine_test.json bert_adr_model/predictions.json \
                 --na-prob-file bert_adr_model/null_odds.json
+```
+
+### SVM Classifier
+```
+python3.6 svm_adr_classifier.py --train-adrmine-tweets adrmine_data/download_tweets/train_tweet_posts.tsv \
+                      --train-adrmine-annotations adrmine_data/download_tweets/train_tweet_annotations.ts \
+                      --test-adrmine-tweets adrmine_data/download_tweets/test_tweet_posts.tsv \
+                      --test-adrmine-annotations adrmine_data/download_tweets/test_tweet_annotations.tsv \
+                      --adrmine-adr-lexicon adrmine_data/ADR_lexicon.tsv
 ```

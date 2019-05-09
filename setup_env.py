@@ -7,6 +7,8 @@ import progressbar
 # ADRMine artifacts
 ADRMINE_DATA_URL = "http://diego.asu.edu/downloads/publications/ADRMine/download_tweets.zip"
 ADRMINE_DATA_DIR = "adrmine_data"
+ADRMINE_DATA_ADR_LEXICON_URL = "http://diego.asu.edu/downloads/publications/ADRMine/ADR_lexicon.tsv"
+ADRMINE_DATA_ADR_LEXICON_NAME = "ADR_lexicon.tsv"
 
 # bert artifacts
 BERT_GIT_URL = "https://github.com/google-research/bert.git"
@@ -62,3 +64,6 @@ download_and_unzip(BERT_ADR_LARGE_URL, BERT_ADR_MODEL_DIR)
 
 print("Downloading {}".format(BERT_EVALUATION_SCRIPT_URL))
 urllib.urlretrieve("{}".format(BERT_EVALUATION_SCRIPT_URL), BERT_EVALUATION_SCRIPT_NAME)
+
+print("Downloading {}".format(BERT_EVALUATION_SCRIPT_URL))
+urllib.urlretrieve("{}".format(ADRMINE_DATA_ADR_LEXICON_URL), ADRMINE_DATA_ADR_LEXICON_NAME)

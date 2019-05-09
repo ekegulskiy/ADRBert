@@ -32,7 +32,7 @@ class ADRMineDataLoader:
 
                 realOffset = tweet.find(annotatedText)
                 if realOffset != startOffset:
-                    print("Fixing startOffset for {}. (annotated at position {}, but should be at {})".format(k, startOffset, realOffset))
+                    #print("Fixing startOffset for {}. (annotated at position {}, but should be at {})".format(k, startOffset, realOffset))
 
                     diff = realOffset - startOffset
                     annotation['startOffset'] = "{}".format(startOffset+diff)
@@ -40,6 +40,8 @@ class ADRMineDataLoader:
 
 
     def load(self, adrmine_tweets, adrmine_annotations):
+        print("Loading ADRMine data from {}...".format(adrmine_annotations))
+
         self._adrmine_tweets = adrmine_tweets
         self._adrmine_annotations = adrmine_annotations
 
@@ -71,14 +73,13 @@ class ADRMineDataLoader:
                                                 'annotatedText': annotatedText})
                     num_usable_annotations += 1
                 else:
-                    print("TextID {} does not have a corresponding tweet".format(textID))
+                    #print("TextID {} does not have a corresponding tweet".format(textID))
                     num_missing_tweets += 1
 
                 adrmine_orig_annotations += 1
 
         self._validate_annotations()
 
-        print("Original ADRMine Data:")
         print("    Number of original annotations: {}".format(adrmine_orig_annotations))
         print("    Number of missing tweets: {}".format(num_missing_tweets))
         print("    Number of usable annotations: {}".format(num_usable_annotations))

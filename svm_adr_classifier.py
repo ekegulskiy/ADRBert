@@ -83,7 +83,7 @@ def vectorize_vocabulary(train_tweets, test_tweets):
     print("    size of vocabulary: {}".format(len(Tfidf_vect.vocabulary_)))
     return Tfidf_vect
 
-def build_data_vectors(annotations, tweets, Tfidf_vect, adr_lexicon):
+def build_data_vectors(annotations, tweets, Tfidf_vect, adr_lexicon, balance_set=True):
     def word_numberic_value(word):
         if word in Tfidf_vect.vocabulary_:
             index = Tfidf_vect.vocabulary_[word]
@@ -126,7 +126,7 @@ def build_data_vectors(annotations, tweets, Tfidf_vect, adr_lexicon):
                     Y.append(1)
                     adr_labels_size += 1
                 else:
-                    if nonadr_labels_size - adr_labels_size > CLASS_SIZE_DIFFERENCE_THREASHOLD:
+                    if balance_set and nonadr_labels_size - adr_labels_size > CLASS_SIZE_DIFFERENCE_THREASHOLD:
                         continue
 
                     Y.append(-1)
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     print("Building feature vectors for training...")
     (train_X, train_Y) = build_data_vectors(train_annotations, train_tweets, Tfidf_vect, adr_lexicon)
     print("Building feature vectors for testing...")
-    (test_X, test_Y) = build_data_vectors(test_annotations, test_tweets, Tfidf_vect, adr_lexicon)
+    (test_X, test_Y) = build_data_vectors(test_annotations, test_tweets, Tfidf_vect, adr_lexicon, balance_set=False)
 
     # Run SVM Classifier
     # (code below is using snippets from https://medium.com/@bedigunjit/simple-guide-to-text-classification-nlp-using-svm-and-naive-bayes-with-python-421db3a72d34)

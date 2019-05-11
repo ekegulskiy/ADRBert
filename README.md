@@ -73,7 +73,7 @@ python evaluate-v2.0.py adrmine_data/adrmine_test.json bert_adr_model/prediction
 ### SVM Classifier
 ```
 python3.6 svm_adr_classifier.py --train-adrmine-tweets adrmine_data/download_tweets/train_tweet_posts.tsv \
-                      --train-adrmine-annotations adrmine_data/download_tweets/train_tweet_annotations.ts \
+                      --train-adrmine-annotations adrmine_data/download_tweets/train_tweet_annotations.tsv \
                       --test-adrmine-tweets adrmine_data/download_tweets/test_tweet_posts.tsv \
                       --test-adrmine-annotations adrmine_data/download_tweets/test_tweet_annotations.tsv \
                       --adrmine-adr-lexicon adrmine_data/ADR_lexicon.tsv

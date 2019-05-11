@@ -3,10 +3,8 @@ import argparse
 
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn import svm
-from sklearn.metrics import accuracy_score
 import scipy
-from sklearn.metrics import f1_score
+from sklearn import model_selection, svm
 
 def load_adr_lexicon(ard_lexicon_file):
     print("Loading ADRMine Lexicon from {}...".format(ard_lexicon_file))
@@ -124,21 +122,105 @@ def build_data_vectors(annotations, tweets, Tfidf_vect, adr_lexicon, balance_set
                 # create label
                 if annotation['semanticType'] == 'ADR' and focus_word in annotated_text_tokens:
                     Y.append(1)
+                    X.append(focus_vector)
                     adr_labels_size += 1
                 else:
-                    if balance_set and nonadr_labels_size - adr_labels_size > CLASS_SIZE_DIFFERENCE_THREASHOLD:
-                        continue
-
                     Y.append(-1)
+                    X.append(focus_vector)
                     nonadr_labels_size += 1
 
-                X.append(focus_vector)
+    print("    Dataset size: {}".format(len(X)))
+    print("    'ADR Mention' class size: {}".format(adr_labels_size))
+    print("    'NO ADR Mention' class size: {}".format(nonadr_labels_size))
 
-    print("    dataset size: {}".format(len(X)))
-    print("    'ADR' class size: {}".format(adr_labels_size))
-    print("    'NON-ADR' class size: {}".format(nonadr_labels_size))
+    if balance_set:
+        print("Performing Class Balancing...")
+        adr_samples_needed = nonadr_labels_size - adr_labels_size
+        if balance_set:
+            new_X = []
+            new_Y = []
+            adr_labels_size = 0
+            nonadr_labels_size = 0
+
+            for index, example in enumerate(X):
+                if adr_samples_needed > 0:
+                    if Y[index] == 1:
+                        new_X.append(example) # add original 'ADR' sample
+                        new_Y.append(1)
+                        new_X.append(example) # add duplicate 'ADR' sample to perform Over-Sampling
+                        new_Y.append(1)
+
+                        adr_labels_size += 2
+                        adr_samples_needed -= 1
+                    else:
+                        # we don't add original 'No ADR Mention' sample to perform Under-Sampling
+                        adr_samples_needed -= 1
+
+                else:
+                    if Y[index] == 1:
+                        adr_labels_size += 1
+                    else:
+                        nonadr_labels_size += 1
+
+                    new_X.append(example)  # add original sample
+                    new_Y.append(Y[index]) # add original label
+
+            X = new_X
+            Y = new_Y
+
+        print("    Updated dataset size: {}".format(len(X)))
+        print("    'ADR Mention' class size: {}".format(adr_labels_size))
+        print("    'No ADR Mention' class size: {}".format(nonadr_labels_size))
+
     X = scipy.sparse.csr_matrix(X)
     return X, Y
+
+def calf_f1(test_Y, predicted_Y):
+
+    POSITIVE = 1
+    NEGATIVE = -1
+
+    tp = 0
+    fp = 0
+    fn = 0
+    tn = 0
+
+    total_predcited_positives = 0
+    total_actual_positives = 0
+    total_actual_negatives = 0
+
+    for index, actual in enumerate(test_Y):
+        predicted = predicted_Y[index]
+
+        if actual == POSITIVE:
+            total_actual_positives += 1
+
+        if actual == NEGATIVE:
+            total_actual_negatives += 1
+
+        if actual == POSITIVE:
+            if predicted == POSITIVE:
+                tp += 1
+            elif predicted == NEGATIVE:
+                fn += 1
+
+        if actual == NEGATIVE:
+            if predicted == POSITIVE:
+                fp += 1
+            elif predicted == NEGATIVE:
+                tn += 1
+
+    precision = tp/(tp+fp)
+    recall = tp/(tp+fn)
+
+    f1 = 2*precision*recall/(precision+recall)
+
+    # print("Total labels: {}, total actual positives: {}, total_actual_negatives: {}".format(len(predicted_Y), total_actual_positives, total_actual_negatives))
+    # print("tp: {}, tn: {}, fp: {}, fn: {}".format(tp, tn, fp, fn))
+    print("        Accuracy: {}".format((tp+tn)/(len(test_Y))))
+    print("        Precision: {}".format(precision))
+    print("        Recall: {}".format(recall))
+    print("        F1: {}".format(f1))
 
 if __name__ == '__main__':
     num_missing_tweets = 0
@@ -173,9 +255,11 @@ if __name__ == '__main__':
 
     Tfidf_vect = vectorize_vocabulary(train_tweets, test_tweets)
     print("Building feature vectors for training...")
-    (train_X, train_Y) = build_data_vectors(train_annotations, train_tweets, Tfidf_vect, adr_lexicon)
+    (train_X, train_Y) = build_data_vectors(train_annotations, train_tweets, Tfidf_vect, adr_lexicon, balance_set=True)
     print("Building feature vectors for testing...")
     (test_X, test_Y) = build_data_vectors(test_annotations, test_tweets, Tfidf_vect, adr_lexicon, balance_set=False)
+
+    train_X, Valid_X, train_Y, Valid_Y = model_selection.train_test_split(train_X, train_Y, test_size=0.3)
 
     # Run SVM Classifier
     # (code below is using snippets from https://medium.com/@bedigunjit/simple-guide-to-text-classification-nlp-using-svm-and-naive-bayes-with-python-421db3a72d34)
@@ -184,8 +268,12 @@ if __name__ == '__main__':
     print("    Training...")
     SVM.fit(train_X, train_Y)
     # predict the labels on validation dataset
-    print("    Predicting...")
+    print("    Evaluation Validating Set...")
+    predictions_SVM = SVM.predict(Valid_X)
+    # Use accuracy_score function to get the accuracy
+    calf_f1(Valid_Y, predictions_SVM)
+
     predictions_SVM = SVM.predict(test_X)
     # Use accuracy_score function to get the accuracy
-    print("    Accuracy Score: {}".format(accuracy_score(predictions_SVM, test_Y) * 100))
-    print("    F1 score: {}".format(f1_score(test_Y, predictions_SVM, average='macro')))
+    print("    Evaluation Test Set...")
+    calf_f1(test_Y, predictions_SVM)

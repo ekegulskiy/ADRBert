@@ -15,8 +15,6 @@ BERT_GIT_URL = "https://github.com/google-research/bert.git"
 BERT_DIR = "bert"
 BERT_LARGE_UNCASED_URL = "https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-24_H-1024_A-16.zip"
 BERT_GENERIC_MODEL_DIR = "bert_generic_model"
-BERT_EVALUATION_SCRIPT_URL = "https://worksheets.codalab.org/rest/bundles/0x6b567e1cf2e041ec80d7098f031c5c9e/contents/blob/"
-BERT_EVALUATION_SCRIPT_NAME = "evaluate-v2.0.py"
 
 # ADRBert artifacts
 BERT_ADR_LARGE_URL = "https://storage.googleapis.com/squad-nn/bert/models/bert_adr_large.zip"
@@ -62,8 +60,5 @@ download_and_unzip(ADRMINE_DATA_URL, ADRMINE_DATA_DIR)
 download_and_unzip(BERT_LARGE_UNCASED_URL, BERT_GENERIC_MODEL_DIR)
 download_and_unzip(BERT_ADR_LARGE_URL, BERT_ADR_MODEL_DIR)
 
-print("Downloading {}".format(BERT_EVALUATION_SCRIPT_URL))
-urllib.urlretrieve("{}".format(BERT_EVALUATION_SCRIPT_URL), BERT_EVALUATION_SCRIPT_NAME)
-
-print("Downloading {}".format(BERT_EVALUATION_SCRIPT_URL))
+print("Downloading {}".format(ADRMINE_DATA_ADR_LEXICON_NAME))
 urllib.urlretrieve("{}".format(ADRMINE_DATA_ADR_LEXICON_URL), ADRMINE_DATA_ADR_LEXICON_NAME)

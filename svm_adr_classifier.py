@@ -210,10 +210,20 @@ def calf_f1(test_Y, predicted_Y):
             elif predicted == NEGATIVE:
                 tn += 1
 
-    precision = tp/(tp+fp)
-    recall = tp/(tp+fn)
+    if (tp+fp) == 0:
+        precision = 0
+    else:
+        precision = tp/(tp+fp)
 
-    f1 = 2*precision*recall/(precision+recall)
+    if (tp+fn) == 0:
+        recall = 0
+    else:
+        recall = tp/(tp+fn)
+
+    if (precision+recall) == 0:
+        f1 = 0
+    else:
+        f1 = 2*precision*recall/(precision+recall)
 
     # print("Total labels: {}, total actual positives: {}, total_actual_negatives: {}".format(len(predicted_Y), total_actual_positives, total_actual_negatives))
     # print("tp: {}, tn: {}, fp: {}, fn: {}".format(tp, tn, fp, fn))
@@ -268,12 +278,12 @@ if __name__ == '__main__':
     print("    Training...")
     SVM.fit(train_X, train_Y)
     # predict the labels on validation dataset
-    print("    Evaluation Validating Set...")
+    print("    Evaluating Validation Set...")
     predictions_SVM = SVM.predict(Valid_X)
     # Use accuracy_score function to get the accuracy
     calf_f1(Valid_Y, predictions_SVM)
 
     predictions_SVM = SVM.predict(test_X)
     # Use accuracy_score function to get the accuracy
-    print("    Evaluation Test Set...")
+    print("    Evaluating Test Set...")
     calf_f1(test_Y, predictions_SVM)

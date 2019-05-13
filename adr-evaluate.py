@@ -74,7 +74,7 @@ def compute_f1(a_gold, a_pred):
   num_same = sum(common.values())
   if len(gold_toks) == 0 or len(pred_toks) == 0:
     # If either is no-answer, then F1, precision and recall are 1 if they agree, 0 otherwise
-    return int(gold_toks == pred_toks), 1, 1
+    return int(gold_toks == pred_toks), int(gold_toks == pred_toks), int(gold_toks == pred_toks)
   if num_same == 0:
     return 0, 0, 0
   precision = 1.0 * num_same / len(pred_toks)

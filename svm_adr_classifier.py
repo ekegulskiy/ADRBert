@@ -1,6 +1,6 @@
 import adrmine_data_loader
 import argparse
-
+import re
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 import scipy
@@ -89,19 +89,37 @@ def build_data_vectors(annotations, tweets, Tfidf_vect, adr_lexicon, balance_set
         else:
             return 0
 
-    CLASS_SIZE_DIFFERENCE_THREASHOLD = 20
-    # key doesn't exist in dict
+    # https://towardsdatascience.com/multi-label-text-classification-with-scikit-learn-30714b7819c5
+    def clean_text(text):
+        orig = text
+        text = text.lower()
+        text = re.sub(r"what's", "what is ", text)
+        text = re.sub(r"\'s", " ", text)
+        text = re.sub(r"\'ve", " have ", text)
+        text = re.sub(r"can't", "can not ", text)
+        text = re.sub(r"n't", " not ", text)
+        text = re.sub(r"i'm", "i am ", text)
+        text = re.sub(r"\'re", " are ", text)
+        text = re.sub(r"\'d", " would ", text)
+        text = re.sub(r"\'ll", " will ", text)
+        text = re.sub(r"\'scuse", " excuse ", text)
+        text = re.sub('\W', ' ', text)
+        text = re.sub('\s+', ' ', text)
+        text = text.strip(' ')
+        return text
 
     X = []
     Y = []
     adr_labels_size = 0
     nonadr_labels_size = 0
     for i, (k, v) in enumerate(annotations.items()):
-        tweet_text = tweets[k]
+        tweet_text = clean_text(tweets[k])
+        tokens = word_tokenize(tweet_text)
 
         for index, annotation in enumerate(v):
-            tokens = word_tokenize(tweet_text.lower())
-            annotated_text = annotation['annotatedText'].lower()
+            prev_token_adr = False
+
+            annotated_text = clean_text(annotation['annotatedText'])
             annotated_text_tokens = word_tokenize(annotated_text)
 
             for index, focus_word in enumerate(tokens):
@@ -117,17 +135,29 @@ def build_data_vectors(annotations, tweets, Tfidf_vect, adr_lexicon, balance_set
                     focus_vector.append(word_numberic_value(tokens[index+3]) if (index+3 < len(tokens)) else 0)
 
                 if program_args.adrlexicon_feature:
-                    focus_vector.append(1 if focus_word in adr_lexicon else 0)
+                    if focus_word in adr_lexicon:
+                        focus_vector.append(1)
+                    else:
+                        focus_vector.append(0)
+
+                if program_args.prev_adrlexicon_feature:
+                    if prev_token_adr:
+                        focus_vector.append(1)
+                    else:
+                        focus_vector.append(0)
 
                 # create label
                 if annotation['semanticType'] == 'ADR' and focus_word in annotated_text_tokens:
                     Y.append(1)
                     X.append(focus_vector)
                     adr_labels_size += 1
+                    prev_token_adr = True
                 else:
                     Y.append(-1)
                     X.append(focus_vector)
                     nonadr_labels_size += 1
+                    prev_token_adr = False
+
 
     print("    Dataset size: {}".format(len(X)))
     print("    'ADR Mention' class size: {}".format(adr_labels_size))
@@ -251,7 +281,9 @@ if __name__ == '__main__':
     parser.add_argument('--adrlexicon-feature', dest='adrlexicon_feature', action='store_true')
     parser.add_argument('--no-adrlexicon-feature', dest='adrlexicon_feature', action='store_false')
     parser.set_defaults(adrlexicon_feature=True)
-
+    parser.add_argument('--prev-adrlexicon-feature', dest='adrlexicon_feature', action='store_true')
+    parser.add_argument('--no-prev-adrlexicon-feature', dest='prev_adrlexicon_feature', action='store_false')
+    parser.set_defaults(prev_adrlexicon_feature=True)
 
     program_args = parser.parse_args()
 

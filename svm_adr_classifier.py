@@ -301,7 +301,7 @@ if __name__ == '__main__':
     print("Building feature vectors for testing...")
     (test_X, test_Y) = build_data_vectors(test_annotations, test_tweets, Tfidf_vect, adr_lexicon, balance_set=False)
 
-    train_X, Valid_X, train_Y, Valid_Y = model_selection.train_test_split(train_X, train_Y, test_size=0.3)
+    train_X, Valid_X, train_Y, Valid_Y = model_selection.train_test_split(train_X, train_Y, random_state = 100, test_size=0.3)
 
     # Run SVM Classifier
     # (code below is using snippets from https://medium.com/@bedigunjit/simple-guide-to-text-classification-nlp-using-svm-and-naive-bayes-with-python-421db3a72d34)

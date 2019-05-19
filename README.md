@@ -66,13 +66,13 @@ python bert_adr_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-102
 
 2. Compute F1 score from bert adr classifier results:
 ```
-python evaluate-v2.0.py adrmine_data/adrmine_test.json bert_adr_model/predictions.json \
+python adr-evaluate.py adrmine_data/adrmine_test.json bert_adr_model/predictions.json \
                 --na-prob-file bert_adr_model/null_odds.json
 ```
 
 ### SVM Classifier
 ```
-python3.6 svm_adr_classifier.py --train-adrmine-tweets adrmine_data/download_tweets/train_tweet_posts.tsv \
+python3.6 adr_svm_classifier.py --train-adrmine-tweets adrmine_data/download_tweets/train_tweet_posts.tsv \
                       --train-adrmine-annotations adrmine_data/download_tweets/train_tweet_annotations.tsv \
                       --test-adrmine-tweets adrmine_data/download_tweets/test_tweet_posts.tsv \
                       --test-adrmine-annotations adrmine_data/download_tweets/test_tweet_annotations.tsv \

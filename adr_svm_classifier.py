@@ -257,7 +257,7 @@ def calf_f1(test_Y, predicted_Y):
 
     # print("Total labels: {}, total actual positives: {}, total_actual_negatives: {}".format(len(predicted_Y), total_actual_positives, total_actual_negatives))
     # print("tp: {}, tn: {}, fp: {}, fn: {}".format(tp, tn, fp, fn))
-    print("        Accuracy: {}".format((tp+tn)/(len(test_Y))))
+    # print("        Accuracy: {}".format((tp+tn)/(len(test_Y))))
     print("        Precision: {}".format(precision))
     print("        Recall: {}".format(recall))
     print("        F1: {}".format(f1))

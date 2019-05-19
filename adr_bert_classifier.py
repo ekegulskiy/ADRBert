@@ -31,7 +31,7 @@ import os
 import random
 import sys
 
-sys.path.append("../bert")
+sys.path.append("./bert")
 
 import modeling
 import optimization

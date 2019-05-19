@@ -83,8 +83,10 @@ python3.6 generate_bert_data.py --adrmine-tweets=adrmine_data/download_tweets/tr
 ```
 
 #### Fine-tune ADR BERT model
-Fine-tuning ADR model involves running bert neural network training and takes about 1 day on a fast Linux PC. That's why
-Google compute engine with TPU (Tensorflow Processing Unit) is recommended where it takes around 1 hour. 
+Fine-tune ADR BERT model by re-training BERT pre-trained model with ADRMine data.
+
+**NOTE: Fine-tuning ADR model involves running bert neural network training and takes about 1 day on a fast Linux PC. That's why
+Google compute engine with TPU (Tensorflow Processing Unit) is recommended where it takes around 1 hour.**
 #### To run fine-tuning locally:
 python adr_bert_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-1024_A-16/vocab.txt \
                        --bert_config_file=bert_generic_model/uncased_L-24_H-1024_A-16/bert_config.json \
@@ -124,7 +126,7 @@ _stride=128   --output_dir=gs://squad-nn/bert/squad_large/   --use_tpu=True   --
 Evaluation of ADR BERT model can be run as on desktop Linux PC as it does not very long time (about 2-4 minutes).
 However, it may run out of memory. On 16-GB Linux PC, it exceeded memory usage by 10% but still was able to run.
 
-1. Evaluate test set and create predictions files required for F1 computation:
+1. Evaluate test set and create predictions files (./bert_adr_model/predictions.json and null_odds.json) required for F1 computation:
 ```
 python3.6 adr_bert_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-1024_A-16/vocab.txt \
                        --bert_config_file=bert_generic_model/uncased_L-24_H-1024_A-16/bert_config.json \

@@ -85,8 +85,11 @@ python3.6 generate_bert_data.py --adrmine-tweets=adrmine_data/download_tweets/tr
 #### Fine-tune ADR BERT model
 Fine-tune ADR BERT model by re-training BERT pre-trained model with ADRMine data.
 
-**NOTE: Fine-tuning ADR model involves running bert neural network training and takes about 1 day on a fast Linux PC. That's why
+**NOTE 1: Fine-tuning ADR model involves running bert neural network training and takes about 1 day on a fast Linux PC. That's why
 Google compute engine with TPU (Tensorflow Processing Unit) is recommended where it takes around 1 hour.**
+
+**NOTE 2: Fine-tuning has been already done using TPU and the model is saved in "bert_adr_model" folder. So running this step is not required by any other steps.**
+
 #### To run fine-tuning locally:
 ```
 python3.6 adr_bert_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-1024_A-16/vocab.txt \

@@ -1,5 +1,5 @@
 import os
-import urllib
+import urllib.request
 import zipfile
 from git import Repo
 import progressbar
@@ -42,7 +42,7 @@ def download_and_unzip(zip_url, unzip_dir):
     if not os.path.exists(unzip_dir):
         target_zip_file = os.path.basename(zip_url)
         print("Downloading {}".format(zip_url))
-        urllib.urlretrieve("{}".format(zip_url), target_zip_file, MyProgressBar())
+        urllib.request.urlretrieve("{}".format(zip_url), target_zip_file, MyProgressBar())
         print("Unzipping {}".format(target_zip_file))
         zip_ref = zipfile.ZipFile(target_zip_file, 'r')
         zip_ref.extractall(unzip_dir)
@@ -61,4 +61,4 @@ download_and_unzip(BERT_LARGE_UNCASED_URL, BERT_GENERIC_MODEL_DIR)
 download_and_unzip(BERT_ADR_LARGE_URL, BERT_ADR_MODEL_DIR)
 
 print("Downloading {}".format(ADRMINE_DATA_ADR_LEXICON_NAME))
-urllib.urlretrieve("{}".format(ADRMINE_DATA_ADR_LEXICON_URL), ADRMINE_DATA_ADR_LEXICON_NAME)
+urllib.request.urlretrieve("{}".format(ADRMINE_DATA_ADR_LEXICON_URL), ADRMINE_DATA_ADR_LEXICON_NAME)

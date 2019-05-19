@@ -1,4 +1,9 @@
 """
+This file implements conversion from ADRMine data to BERT SQuAD JSON format
+
+Package: generate_bert_data
+
+Author: Eduard Kegulskiy
 
 """
 
@@ -10,27 +15,21 @@ import json
 import argparse
 import adrmine_data_loader
 
-def validate_annotations(annotations_dict, tweets_dict):
-    for i, (k, v) in enumerate(annotations_dict.items()):
-        for index, annotation in enumerate(v):
-            startOffset = int(annotation['startOffset'])
-            endOffset = int(annotation['endOffset'])
-            tweet = tweets_dict[k]
-            annotatedText = annotation['annotatedText']
-
-            realOffset = tweet.find(annotatedText)
-            if realOffset != startOffset:
-                print("Fixing startOffset for {}. (annotated at position {}, but should be at {})".format(k, startOffset, realOffset))
-
-                diff = realOffset - startOffset
-                annotation['startOffset'] = "{}".format(startOffset+diff)
-                annotation['endOffset'] = "{}".format(endOffset+diff)
-
 
 def convert_to_json(annotations_dict, tweets_dict, output_file):
+    """converts ADRMine data into JSON format as specified by https://rajpurkar.github.io/SQuAD-explorer/
+
+    # Arguments
+        annotations_dict - dict with ADRMine annotations
+        tweets_dict - dict with ADRMine tweets
+        output_file - JSON file to be created
+
+    # Returns
+        None
+    """
 
     def contains_adr(annotation_list):
-    # first check whether there is at least one ADR mention in this tweet
+        # first check whether there is at least one ADR mention in this tweet
         for index, annotation in enumerate(annotation_list):
             if annotation['semanticType'] == "ADR":
                 return True
@@ -94,8 +93,6 @@ def convert_to_json(annotations_dict, tweets_dict, output_file):
 
 
 if __name__ == '__main__':
-    num_missing_tweets = 0
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--adrmine-tweets', required=True, type=str, help='ADRMine dataset file with tweets')
     parser.add_argument('--adrmine-annotations', required=True, type=str, help='ADRMine dataset file with annotations')
@@ -107,4 +104,3 @@ if __name__ == '__main__':
     (annotationsDict, tweetTextDict) = admine_data_loader.load(program_args.adrmine_tweets, program_args.adrmine_annotations)
 
     convert_to_json(annotationsDict, tweetTextDict, program_args.json_output_file)
-

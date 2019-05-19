@@ -49,6 +49,14 @@ class ADRMineDataLoader:
         self._tweets_dict = None
 
     def _validate_annotations(self):
+        """checks original ADRMine annotations and fixes the offsets when they are incorrect
+
+        # Arguments
+            None
+
+        # Returns
+            None
+        """
         for i, (k, v) in enumerate(self._annotations_dict.items()):
             for index, annotation in enumerate(v):
                 startOffset = int(annotation['startOffset'])

@@ -8,6 +8,20 @@
  ADRBert yields a decent F1 score of 0.701 which is just slightly lower than ADRMine F1 score of 0.721. The ADR SVM performs worse, giving the F1 score of 0.499.
 ### Conclusion
  Classical ML approaches can yield good performance when applied to ADR detection but require ADR-specific features engineered manually. Deep learning systems such as BERT, on the other hand, do not require feature engineering specific to the task, while still producing comparable results. A possible explanation is that pre-trained BERT model encapsulates “ADR-like” language knowledge and therefore can learn to detect ADRs by just being fine-tuned with ADR-specific training set. However, deep learning methods have a different concern – their learning complexity may be of a very high order and therefore requires significant computational resources, comparing to classical methods where the complexity is bounded by small number of features.
+### References
+[1] Jacob Devlin, Ming-Wei Chang, Kenton Lee, Kristina Toutanova (2018). BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. arXiv:1810.04805v1 [cs.CL] 11 Oct 2018
+[2] Ioannis Korkontzelos, Azadeh Nikfarjam, Matthew Shardlow, et al., Analysis of the effect of sentiment analysis on extracting adverse drug reactions from tweets and forum posts, Journal of Biomedical Informatics Volume 62, August 2016, Pages 148-158
+[3] A. Nikfarjam, A. Sarker, K. O’Connor, R. Ginn, G. Gonzalez, Pharmacovigilance from social media: mining adverse drug reaction mentions using sequence labeling with word embedding cluster features, J. Am. Med Inform. Assoc. (2015), http://dx.doi.org/10.1093/jamia/ocu041.
+[4] FDA Adverse Event Reporting System (FAERS) Public Dashboard. https://www.fda.gov/drugs/fda-adverse-event-reporting-system-faers/fda-adverse-event-reporting-system-faers-public-dashboard. Accessed May 2019.
+[5] Pranav Rajpurkar, Jian Zhang, Konstantin Lopyrev, Percy Liang. (2016) SQuAD: 100,000+ Questions for Machine Comprehension of Text.  arXiv:1606.05250 [cs.CL]
+[6] Source code used for this research: https://github.com/ekegulskiy/ADRBert 
+[7] Wikipedia, Conditional Random Fields definition https://en.wikipedia.org/wiki/Conditional_random_field
+[8] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez et al., Attention Is All You Need, arXiv:1706.03762v5 [cs.CL] 6 Dec 2017
+[9] Python ML Tools and Classifiers, https://scikit-learn.org/stable/
+[10] Barnabás Póczos, Introduction to Machine Learning CMU-10701, https://alex.smola.org/teaching/cmu2013-10-701/slides/11_Learning_Theory.pdf 
+[11] Devroye et al., 1996; Vapnik, 1998, Vapnik–Chervonenkis Theory, Error Estimation for Pattern Recognition, First Edition. Ulisses M. Braga-Neto and Edward R. Dougherty.© 2015 The Institute of Electrical and Electronics Engineers, Inc. Published 2015 by John Wiley & Sons, Inc (https://onlinelibrary.wiley.com/doi/pdf/10.1002/9781119079507.app2) 
+[12] BERT GitHub repository, https://github.com/google-research/bert
+
 
 ## Instructions
 ### Python Requirements

@@ -36,15 +36,15 @@
 
 ## Instructions
 ### Python Requirements
-1. Note that both python3.6 and python2.7 version required, due to ADRMine scripts using python2.7
-1. sudo pip3.6 install gitpython
-2. sudo apt-get install python3-git
-3. sudo pip3.6 install -r requirements.txt
+1. Both python3.6 and python2.7 version required, due to ADRMine scripts using python2.7
+2. sudo pip3.6 install gitpython
+3. sudo apt-get install python3-git
+4. sudo pip3.6 install -r requirements.txt
 
 ### Setup Project Environment
 To setup project environments, execute setup_env.py script as following:
 ```
-python3 setup_env.py
+python3.6 setup_env.py
 ```
 
 It will download and prepare the following sub-directories with components:
@@ -57,9 +57,9 @@ It will download and prepare the following sub-directories with components:
 #### Convert ADRMine data to BERT SQuAD format
 1. Use ADRMine script to download training and test set tweets from which ADR annotation were created:
 
-**NOTE 1: ADRMine script requires python2.7**
+   **NOTE 1: ADRMine script requires python2.7**
 
-**NOTE 2: This will take ~5 minutes as it downloads tweets from Twitter.com**
+   **NOTE 2: This will take ~5 minutes as it downloads tweets from Twitter.com**
 
 ```
 python2.7 adrmine_data/download_tweets/download_tweets.py \

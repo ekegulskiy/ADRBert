@@ -36,9 +36,10 @@
 
 ## Instructions
 ### Python Requirements
-1. make sure you use python3
-1. pip3 install gitpython
-2. pip3 install -r requirements.txt
+1. Note that both python3.6 and python2.7 version required, due to ADRMine scripts using python2.7
+1. sudo pip3.6 install gitpython
+2. sudo apt-get install python3-git
+3. sudo pip3.6 install -r requirements.txt
 
 ### Setup Project Environment
 To setup project environments, execute setup_env.py script as following:
@@ -53,31 +54,35 @@ It will download and prepare the following sub-directories with components:
 4. bert_adr_out (bert fine-tuned ADR model)
 
 ### ADR BERT Classifier
-#### Convert ADRMine data to BERT format
+#### Convert ADRMine data to BERT SQuAD format
 1. Use ADRMine script to download training and test set tweets from which ADR annotation were created:
 
+**NOTE 1: ADRMine script requires python2.7**
+
+**NOTE 2: This will take ~5 minutes as it downloads tweets from Twitter.com**
+
 ```
-python adrmine_data/download_tweets/download_tweets.py \
+python2.7 adrmine_data/download_tweets/download_tweets.py \
        adrmine_data/download_tweets/test_tweet_ids.tsv > adrmine_data/download_tweets/test_tweet_posts.tsv
 
-python adrmine_data/download_tweets/download_tweets.py \
+python2.7 adrmine_data/download_tweets/download_tweets.py \
        adrmine_data/download_tweets/train_tweet_ids.tsv > adrmine_data/download_tweets/train_tweet_posts.tsv
 ```
 
-2. Use generate_bert_data.py script to convert ADRMine training and test sets into bert format:
+2. Convert ADRMine training and test sets into BERT SQuAD JSON format:
 
 ```
-python generate_bert_data.py --adrmine-tweets=adrmine_data/download_tweets/test_tweet_posts.tsv \
+python3.6 generate_bert_data.py --adrmine-tweets=adrmine_data/download_tweets/test_tweet_posts.tsv \
                        --adrmine-annotations=adrmine_data/download_tweets/test_tweet_annotations.tsv \
                        --json-output-file=adrmine_data/adrmine_test.json
 
-python generate_bert_data.py --adrmine-tweets=adrmine_data/download_tweets/train_tweet_posts.tsv \
+python3.6 generate_bert_data.py --adrmine-tweets=adrmine_data/download_tweets/train_tweet_posts.tsv \
                        --adrmine-annotations=adrmine_data/download_tweets/train_tweet_annotations.tsv \
                        --json-output-file=adrmine_data/adrmine_train.json
 
 ```
 
-#### Fine-tune ADR model
+#### Fine-tune ADR BERT model
 Fine-tuning ADR model involves running bert neural network training and takes about 1 day on a fast Linux PC. That's why
 Google compute engine with TPU (Tensorflow Processing Unit) is recommended where it takes around 1 hour. 
 #### To run fine-tuning locally:
@@ -108,20 +113,20 @@ export SQUAD_DIR=/home/[your VM user name]/bert/squad_dir
 export TPU_NAME=[TPU instance created in Step 2 above]
 ```
 
-6. Run ADR Bert fine-tuning and prediction The following command will do the training and generate prediction files:
+6. Run ADR BERT fine-tuning and prediction. The following command will do the training and generate prediction files:
 ```
  python adr_bert_classifier.py --vocab_file=$BERT_LARGE_DIR/vocab.txt   --bert_config_file=$BERT_LARGE_DIR/bert_config.json   --init_checkpoint=$BERT_LARGE_DIR/bert_model.ckpt   --do_train=True   --tra
 in_file=$SQUAD_DIR/train-v2.0.json   --do_predict=True   --predict_file=$SQUAD_DIR/dev-v2.0.json   --train_batch_size=24   --learning_rate=3e-5   --num_train_epochs=2.0   --max_seq_length=384   --doc
 _stride=128   --output_dir=gs://squad-nn/bert/squad_large/   --use_tpu=True   --tpu_name=$TPU_NAME   --version_2_with_negative=True --do_lower_case=False
 ```
                        
-#### Evaluating ADR model
-Evaluation of ADR model can be run as on desktop Linux PC as it does not very long time (about 2-4 minutes).
+#### Evaluating ADR BERT model
+Evaluation of ADR BERT model can be run as on desktop Linux PC as it does not very long time (about 2-4 minutes).
 However, it may run out of memory. On 16-GB Linux PC, it exceeded memory usage by 10% but still was able to run.
 
-1. Run bert adr classifier to evaluate test set and create output files required for F1 computation:
+1. Evaluate test set and create predictions files required for F1 computation:
 ```
-python bert_adr_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-1024_A-16/vocab.txt \
+python3.6 adr_bert_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-1024_A-16/vocab.txt \
                        --bert_config_file=bert_generic_model/uncased_L-24_H-1024_A-16/bert_config.json \
                        --init_checkpoint=bert_generic_model/uncased_L-24_H-1024_A-16/bert_model.ckpt \
                        --do_train=False --train_file=adrmine_data/adrmine_train.json --do_predict=True \
@@ -130,13 +135,14 @@ python bert_adr_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-102
                        --output_dir=./bert_adr_model --use_tpu=False --version_2_with_negative=True
 ```
 
-2. Compute F1 score from bert adr classifier results:
+2. Compute F1 score:
 ```
-python adr-evaluate.py adrmine_data/adrmine_test.json bert_adr_model/predictions.json \
+python3.6 adr_bert_evaluate.py adrmine_data/adrmine_test.json bert_adr_model/predictions.json \
                 --na-prob-file bert_adr_model/null_odds.json
 ```
 
-### SVM Classifier
+### ADR SVM Classifier
+Run ADR SVM Classifier to train and evaluate ADRMine data:
 ```
 python3.6 adr_svm_classifier.py --train-adrmine-tweets adrmine_data/download_tweets/train_tweet_posts.tsv \
                       --train-adrmine-annotations adrmine_data/download_tweets/train_tweet_annotations.tsv \

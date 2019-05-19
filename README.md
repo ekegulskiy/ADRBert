@@ -88,13 +88,15 @@ Fine-tune ADR BERT model by re-training BERT pre-trained model with ADRMine data
 **NOTE: Fine-tuning ADR model involves running bert neural network training and takes about 1 day on a fast Linux PC. That's why
 Google compute engine with TPU (Tensorflow Processing Unit) is recommended where it takes around 1 hour.**
 #### To run fine-tuning locally:
-python adr_bert_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-1024_A-16/vocab.txt \
+```
+python3.6 adr_bert_classifier.py --vocab_file=bert_generic_model/uncased_L-24_H-1024_A-16/vocab.txt \
                        --bert_config_file=bert_generic_model/uncased_L-24_H-1024_A-16/bert_config.json \
                        --init_checkpoint=bert_generic_model/uncased_L-24_H-1024_A-16/bert_model.ckpt \
                        --do_train=True --train_file=adrmine_data/adrmine_train.json --do_predict=True \
                        --predict_file=adrmine_data/adrmine_test.json --train_batch_size=24 \
                        --learning_rate=3e-5 --num_train_epochs=2.0 --max_seq_length=100 --doc_stride=50 \
                        --output_dir=./bert_adr_model --use_tpu=False --version_2_with_negative=True
+```
 
 #### To run fine-tuning on TPU:
 1. Create/Open Google VM Using Google TPU requires Google Cloud VM. It can be created from Google Cloud console (see https://blog.goodaudience.com/how-to-use-google-cloud-tpus-177c3a025067)
@@ -117,7 +119,7 @@ export TPU_NAME=[TPU instance created in Step 2 above]
 
 6. Run ADR BERT fine-tuning and prediction. The following command will do the training and generate prediction files:
 ```
- python adr_bert_classifier.py --vocab_file=$BERT_LARGE_DIR/vocab.txt   --bert_config_file=$BERT_LARGE_DIR/bert_config.json   --init_checkpoint=$BERT_LARGE_DIR/bert_model.ckpt   --do_train=True   --tra
+ python3.6 adr_bert_classifier.py --vocab_file=$BERT_LARGE_DIR/vocab.txt   --bert_config_file=$BERT_LARGE_DIR/bert_config.json   --init_checkpoint=$BERT_LARGE_DIR/bert_model.ckpt   --do_train=True   --tra
 in_file=$SQUAD_DIR/train-v2.0.json   --do_predict=True   --predict_file=$SQUAD_DIR/dev-v2.0.json   --train_batch_size=24   --learning_rate=3e-5   --num_train_epochs=2.0   --max_seq_length=384   --doc
 _stride=128   --output_dir=gs://squad-nn/bert/squad_large/   --use_tpu=True   --tpu_name=$TPU_NAME   --version_2_with_negative=True --do_lower_case=False
 ```

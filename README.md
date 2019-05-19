@@ -43,7 +43,7 @@
 ### Setup Project Environment
 To setup project environments, execute setup_env.py script as following:
 ```
-python setup_env.py
+python3 setup_env.py
 ```
 
 It will download and prepare the following sub-directories with components:
@@ -52,7 +52,7 @@ It will download and prepare the following sub-directories with components:
 3. bert_generic_model (bert pre-trained model from https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-24_H-1024_A-16.zip)
 4. bert_adr_out (bert fine-tuned ADR model)
 
-### BERT Classifier
+### ADR BERT Classifier
 #### Convert ADRMine data to BERT format
 1. Use ADRMine script to download training and test set tweets from which ADR annotation were created:
 
